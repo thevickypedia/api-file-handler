@@ -6,7 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @SpringBootApplication
 public class ApplicationServer {
@@ -37,7 +38,11 @@ public class ApplicationServer {
         logger.info("Starting application on port: http://localhost:{}", port);
 
         SpringApplication app = new SpringApplication(ApplicationServer.class);
-        app.setDefaultProperties(Collections.singletonMap("server.port", port));
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("server.port", port);
+        properties.put("spring.servlet.multipart.max-file-size", settings.maxSize);
+        properties.put("spring.servlet.multipart.max-request-size", settings.maxSize);
+        app.setDefaultProperties(properties);
         app.run(args);
     }
 }

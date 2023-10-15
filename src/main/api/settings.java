@@ -9,6 +9,7 @@ public class settings {
     public static String source = "source";
     public static String uploads = "uploads";
     public static String port = "8080";
+    public static String maxSize = "10MB";
     static Logger logger = LoggerFactory.getLogger(settings.class);
 
     public settings() {
@@ -22,6 +23,7 @@ public class settings {
             uploads = dotenv.get("UPLOADS", uploads);
             source = dotenv.get("SOURCE", source);
             port = dotenv.get("PORT", port);
+            maxSize = dotenv.get("MAX_SIZE", maxSize);
         } catch (DotenvException error) {
             logger.warn(error.toString());
         }
