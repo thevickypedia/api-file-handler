@@ -18,7 +18,10 @@ public class ApplicationServer {
 
     public static File create_dir(String dirName) {
         File directory = new File(dirName);
-        if (!directory.exists()) {
+        if (directory.exists()) {
+            logger.info("Directory exists '{}'", dirName);
+        } else {
+            logger.info("Created directory '{}'", dirName);
             boolean ignore = directory.mkdirs();
         }
         return directory;
@@ -27,16 +30,15 @@ public class ApplicationServer {
     public static void main(String[] args) {
         settings.uploadPath = create_dir(settings.uploads);
         settings.sourcePath = create_dir(settings.source);
-        if (settings.sourcePath.exists() && settings.uploadPath.exists()) {
-            logger.info("Created source directory {} and uploads directory {}", settings.source, settings.uploads);
-        } else {
+        if (!settings.sourcePath.exists() | !settings.uploadPath.exists()) {
             logger.error("Failed to create required directories. Aborting startup.");
             return;
         }
 
         // Parse as integer only for validation purpose
         Integer port = Integer.parseInt(settings.port);
-        logger.info("Starting application on port: http://localhost:{}", port);
+        logger.info("Starting application on port: http://localhost:{} with a max size of '{}'",
+                port, settings.maxSize);
 
         SpringApplication app = new SpringApplication(ApplicationServer.class);
         Map<String, Object> properties = new HashMap<>();

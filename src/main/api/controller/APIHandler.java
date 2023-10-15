@@ -11,9 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 @RestController
 public class APIHandler {
@@ -21,11 +19,12 @@ public class APIHandler {
     static Logger logger = LoggerFactory.getLogger(APIHandler.class);
 
     public static String size_converter(long byteSize) {
-        @SuppressWarnings("DuplicatedCode")
-        List<String> size_name = Arrays.asList("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB");
+        if (byteSize == 0) {
+            return "0 Bytes";
+        }
         int index = (int) Math.floor(Math.log(byteSize) / Math.log(1024));
         double byte_zie = byteSize / Math.pow(1024, index);
-        return String.format("%s %s", Math.round(byte_zie * 100.0) / 100.0, size_name.get(index));
+        return String.format("%s %s", Math.round(byte_zie * 100.0) / 100.0, settings.size_name.get(index));
     }
 
     @GetMapping(path = "/health")

@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.security.InvalidParameterException;
+import java.util.Arrays;
+import java.util.List;
 
 public class settings {
     public static String source = "source";
@@ -15,6 +18,7 @@ public class settings {
     public static File uploadPath = null;
     public static File sourcePath = null;
     static Logger logger = LoggerFactory.getLogger(settings.class);
+    public static List<String> size_name = Arrays.asList("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB");
 
     public settings() {
         String env_file = System.getenv().getOrDefault("env_file", ".env");
@@ -31,5 +35,11 @@ public class settings {
         } catch (DotenvException error) {
             logger.warn(error.toString());
         }
+        for (String s : size_name) {
+            if (maxSize.endsWith(s)) {
+                return;
+            }
+        }
+        throw new InvalidParameterException(String.format("Size should end with one of %s", size_name));
     }
 }
