@@ -1,15 +1,21 @@
 package main.api.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import main.api.settings;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import main.api.settings;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -33,6 +39,28 @@ public class APIHandler {
         logger.info("Remote IP {}", request.getRemoteAddr());
         logger.info("Accessed /health endpoint - '{}'", datetime);
         return ResponseEntity.ok().body("healthy");
+    }
+
+    @GetMapping(path = "/download-file")
+    public Object download_file(HttpServletRequest request, @RequestParam String fileName) {
+        String datetime = dateFormat.format(new Date());
+        logger.info("Remote IP {}", request.getRemoteAddr());
+        logger.info("Accessed /download-file endpoint - '{}'", datetime);
+        JSONObject outputJSON = new JSONObject();
+        outputJSON.put("timestamp", datetime);
+        File file = Paths.get(settings.sourcePath.toString(), fileName).toFile();
+        try {
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+            return ResponseEntity.ok()
+                    .contentLength(file.length())
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (FileNotFoundException error) {
+            logger.error(error.toString());
+            outputJSON.put("status", String.format("file '%s' doesn't exist in '%s'", fileName, settings.source));
+        }
+        logger.info(outputJSON.toString());
+        return outputJSON.toString();
     }
 
     @PostMapping(path = "/upload-file", consumes = {"multipart/form-data"})

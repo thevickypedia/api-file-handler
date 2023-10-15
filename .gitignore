@@ -1,6 +1,8 @@
 .idea/
 target/
 .env
+uploads/
+source/
 
 # Python SDK added to JavaIDE
 *.py

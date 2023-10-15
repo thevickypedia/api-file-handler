@@ -33,6 +33,11 @@ curl --location 'http://localhost:8080/upload-file?deleteExisting=true' \
 --form 'file=@"~/sample.txt"'
 ```
 
+### Donwload File
+```shell
+curl --location 'http://localhost:8080/download-file?fileName=sample.docx'
+```
+
 ## License & copyright
 &copy; Vignesh Rao
 
