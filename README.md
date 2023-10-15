@@ -22,27 +22,27 @@ Upload and download files using Spring based API
 ### Health Status
 ```shell
 curl --location 'http://localhost:8080/health' \
---header 'Authorization: MyToken'
+--header 'Authorization: MyToken@2023'
 ```
 
 ### Upload File
 **Fail on existing file**
 ```shell
-curl --location 'http://localhost:8080/upload-file?deleteExisting=true' \
---header 'Authorization: MyToken' \
+curl --location 'http://localhost:8080/upload-file' \
+--header 'Authorization: MyToken@2023' \
 --form 'file=@"~/sample.txt"'
 ```
 **Overwrite existing file**
 ```shell
-curl --location 'http://localhost:8080/upload-file?deleteExisting=true' \
---header 'Authorization: MyToken' \
+curl --location 'http://localhost:8080/upload-file?overwrite=true' \
+--header 'Authorization: MyToken@2023' \
 --form 'file=@"~/sample.txt"'
 ```
 
 ### Donwload File
 ```shell
 curl --location 'http://localhost:8080/download-file?fileName=sample.docx' \
---header 'Authorization: MyToken'
+--header 'Authorization: MyToken@2023'
 ```
 
 ## License & copyright

@@ -13,14 +13,14 @@ import java.nio.file.Paths;
 public class FileHandler {
     static Logger logger = LoggerFactory.getLogger(APIHandler.class);
 
-    public static boolean uploadFile(byte[] fileData, String fileName, Boolean deleteExisting)
+    public static boolean uploadFile(byte[] fileData, String fileName, Boolean overwrite)
             throws FileAlreadyExistsException {
-        logger.info(String.format("Flag for deletion: %s", deleteExisting));
+        logger.info(String.format("flag for deletion: %s", overwrite));
         Path target = Paths.get(settings.uploadPath.toString(), fileName);
         if (target.toFile().exists()) {
-            if (!deleteExisting) {
+            if (!overwrite) {
                 throw new FileAlreadyExistsException(String.format(
-                        "'%s' already exists at '%s'. Use 'deleteExisting' flag to replace existing file.",
+                        "'%s' already exists in '%s' directory. Use 'overwrite' flag to replace existing file.",
                         fileName, settings.uploads
                 ));
             }

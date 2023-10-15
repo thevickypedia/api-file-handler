@@ -74,7 +74,7 @@ public class APIHandler {
     @PostMapping(path = "/upload-file", consumes = {"multipart/form-data"})
     public Object upload_file(HttpServletRequest request,
                               @RequestPart MultipartFile file,
-                              @RequestParam(required = false) boolean deleteExisting) {
+                              @RequestParam(required = false) boolean overwrite) {
         if (validateRequest(request)) {
             logger.info("Authorized");
         } else {
@@ -93,12 +93,12 @@ public class APIHandler {
             outputJSON.put("type", fileType);
             try {
                 byte[] byteArray = file.getBytes();
-                if (FileHandler.uploadFile(byteArray, fileName, deleteExisting)) {
-                    outputJSON.put("status", String.format("Uploaded '%s' [%s: %s] to '%s'",
+                if (FileHandler.uploadFile(byteArray, fileName, overwrite)) {
+                    outputJSON.put("status", String.format("uploaded '%s' [%s: %s] to '%s'",
                             file.getOriginalFilename(), fileSize, fileType, settings.uploads)
                     );
                 } else {
-                    outputJSON.put("status", String.format("Failed to upload '%s' [%s: %s] to '%s'",
+                    outputJSON.put("status", String.format("failed to upload '%s' [%s: %s] to '%s'",
                             file.getOriginalFilename(), fileSize, fileType, settings.uploads)
                     );
                 }
