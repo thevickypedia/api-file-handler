@@ -17,6 +17,7 @@ public class settings {
     public static String maxSize = "10MB";
     public static File uploadPath = null;
     public static File sourcePath = null;
+    public static String token = null;
     static Logger logger = LoggerFactory.getLogger(settings.class);
     public static List<String> size_name = Arrays.asList("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB");
 
@@ -32,14 +33,21 @@ public class settings {
             source = dotenv.get("SOURCE", source);
             port = dotenv.get("PORT", port);
             maxSize = dotenv.get("MAX_SIZE", maxSize);
+            token = dotenv.get("TOKEN", token);
         } catch (DotenvException error) {
             logger.warn(error.toString());
         }
-        for (String s : size_name) {
-            if (maxSize.endsWith(s)) {
+        if (token == null) {
+            throw new InvalidParameterException("'TOKEN' is required for startup.");
+        }
+        if (token.length() > 120 | token.length() < 8) {
+            throw new InvalidParameterException("character size for 'TOKEN' should be between 8 and 120");
+        }
+        for (String size : size_name) {
+            if (maxSize.endsWith(size)) {
                 return;
             }
         }
-        throw new InvalidParameterException(String.format("Size should end with one of %s", size_name));
+        throw new InvalidParameterException(String.format("'MAX_SIZE' should end with one of %s", size_name));
     }
 }

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,30 +25,37 @@ public class APIHandler {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MMM-dd-yyyy hh:mm:ss.SSS a");
     static Logger logger = LoggerFactory.getLogger(APIHandler.class);
 
-    public static String size_converter(long byteSize) {
-        if (byteSize == 0) {
-            return "0 Bytes";
-        }
-        int index = (int) Math.floor(Math.log(byteSize) / Math.log(1024));
-        double byte_zie = byteSize / Math.pow(1024, index);
-        return String.format("%s %s", Math.round(byte_zie * 100.0) / 100.0, settings.size_name.get(index));
+    public boolean validateRequest(HttpServletRequest request) {
+        String datetime = dateFormat.format(new Date());
+        @SuppressWarnings("OptionalGetWithoutIsPresent")
+        String function = "/" + StackWalker
+                .getInstance()
+                .walk(stream -> stream.skip(1).findFirst().get())
+                .getMethodName().replace('_', '-');
+        logger.info("{} accessed '{}' endpoint - '{}'", request.getRemoteAddr(), function, datetime);
+        return models.authRequest(request.getHeader("Authorization"));
     }
 
     @GetMapping(path = "/health")
-    public Object upload(HttpServletRequest request) {
-        String datetime = dateFormat.format(new Date());
-        logger.info("Remote IP {}", request.getRemoteAddr());
-        logger.info("Accessed /health endpoint - '{}'", datetime);
+    public Object health(HttpServletRequest request) {
+        if (validateRequest(request)) {
+            logger.info("Authorized");
+        } else {
+            logger.error("401 Unauthorized");
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
         return ResponseEntity.ok().body("healthy");
     }
 
     @GetMapping(path = "/download-file")
     public Object download_file(HttpServletRequest request, @RequestParam String fileName) {
-        String datetime = dateFormat.format(new Date());
-        logger.info("Remote IP {}", request.getRemoteAddr());
-        logger.info("Accessed /download-file endpoint - '{}'", datetime);
+        if (validateRequest(request)) {
+            logger.info("Authorized");
+        } else {
+            logger.error("401 Unauthorized");
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
         JSONObject outputJSON = new JSONObject();
-        outputJSON.put("timestamp", datetime);
         File file = Paths.get(settings.sourcePath.toString(), fileName).toFile();
         try {
             InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
@@ -67,16 +75,18 @@ public class APIHandler {
     public Object upload_file(HttpServletRequest request,
                               @RequestPart MultipartFile file,
                               @RequestParam(required = false) boolean deleteExisting) {
-        String datetime = dateFormat.format(new Date());
-        logger.info("Remote IP {}", request.getRemoteAddr());
-        logger.info("Accessed /upload-file endpoint - '{}'", datetime);
+        if (validateRequest(request)) {
+            logger.info("Authorized");
+        } else {
+            logger.error("401 Unauthorized");
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
         JSONObject outputJSON = new JSONObject();
-        outputJSON.put("timestamp", datetime);
         if (file == null) {
             outputJSON.put("status", "no file fragment received");
         } else {
             String fileName = file.getOriginalFilename();
-            String fileSize = size_converter(file.getSize());
+            String fileSize = models.size_converter(file.getSize());
             String fileType = file.getContentType();
             outputJSON.put("name", fileName);
             outputJSON.put("size", fileSize);

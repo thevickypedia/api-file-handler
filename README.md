@@ -12,30 +12,35 @@ Upload and download files using Spring based API
 - **MAX_SIZE** - Maximum file size to be allowed.
 - **UPLOADS** - Directory name to upload files into. _Creates a new one if not present already_
 - **SOURCE** - Directory to download files from. _Creates a new one if not present already_
+- **TOKEN** - Authentication token. _Required argument with `8` to `120` character limit_
 - **PORT** - Port number to host the API. _Defaults to `8080`_
 > Environment variables can be loaded from a `.env` file.
 
 ## Usage
 ### Health Status
 ```shell
-curl --location 'http://localhost:8080/health'
+curl --location 'http://localhost:8080/health' \
+--header 'Authorization: MyToken'
 ```
 
 ### Upload File
 **Fail on existing file**
 ```shell
-curl --location 'http://localhost:8080/upload-file' \
+curl --location 'http://localhost:8080/upload-file?deleteExisting=true' \
+--header 'Authorization: MyToken' \
 --form 'file=@"~/sample.txt"'
 ```
 **Overwrite existing file**
 ```shell
 curl --location 'http://localhost:8080/upload-file?deleteExisting=true' \
+--header 'Authorization: MyToken' \
 --form 'file=@"~/sample.txt"'
 ```
 
 ### Donwload File
 ```shell
-curl --location 'http://localhost:8080/download-file?fileName=sample.docx'
+curl --location 'http://localhost:8080/download-file?fileName=sample.docx' \
+--header 'Authorization: MyToken'
 ```
 
 ## License & copyright
