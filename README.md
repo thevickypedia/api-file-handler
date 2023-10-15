@@ -1,4 +1,6 @@
-[![made-with-spring](https://img.shields.io/badge/Made%20with-Java-blue?style=for-the-badge&logo=spring)](https://spring.io/)
+![made-with-java](https://raw.githubusercontent.com/forthebadge/for-the-badge/master/src/images/badges/made-with-java.svg)
+
+[![powered-by-spring](https://img.shields.io/badge/Powered%20by-spring-blue?style=for-the-badge&logo=spring)](https://spring.io/)
 
 ![Platform](https://img.shields.io/badge/Platform-Linux|MacOS|Windows-1f425f.svg)
 
