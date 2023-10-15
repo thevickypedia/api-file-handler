@@ -11,6 +11,7 @@ import java.util.Collections;
 @SpringBootApplication
 public class ApplicationServer {
     static Logger logger = LoggerFactory.getLogger(ApplicationServer.class);
+    @SuppressWarnings({"InstantiationOfUtilityClass", "unused"})
     public static settings a = new settings();
 
     public static boolean create_dir(String dirName) {

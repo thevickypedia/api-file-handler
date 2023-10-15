@@ -5,27 +5,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class settings {
     static Logger logger = LoggerFactory.getLogger(settings.class);
-    static File dotenvPath = new File("src");
-    static File dotenvFile = new File(".env");
     static String source = "source";
     static String uploads = "uploads";
     static String port = "8080";
 
     public settings() {
-        if (dotenvPath.exists() && dotenvFile.exists()) {
-            logger.info("Loading {} at {}", dotenvFile, dotenvPath);
+        String env_file = System.getenv().getOrDefault("env_file", ".env");
+        Path currentPath = Paths.get(System.getProperty("user.dir"));
+        Path dotenvFile = Paths.get(currentPath.toString(), "src", env_file);
+        File dotENV = new File(dotenvFile.toString());
+        if (dotENV.exists()) {
+            logger.info("Loading '{}' at '{}'", dotenvFile, "src");
             Dotenv dotenv = Dotenv.configure()
-                    .directory(dotenvPath.toString())
-                    .filename(dotenvFile.toString())
+                    .directory("src")
+                    .filename(env_file)
                     .load();
             uploads = dotenv.get("UPLOADS", uploads);
             source = dotenv.get("SOURCE", source);
             port = dotenv.get("PORT", port);
         } else {
-            logger.info("{} was not found in {}", dotenvFile, dotenvPath);
+            logger.info("'{}' was not found in '{}'", dotenvFile, "src");
         }
     }
 }
