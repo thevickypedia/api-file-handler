@@ -16,17 +16,18 @@ public class ApplicationServer {
     public static settings a = new settings();
     static Logger logger = LoggerFactory.getLogger(ApplicationServer.class);
 
-    public static boolean create_dir(String dirName) {
-        File uploads = new File(dirName);
-        if (uploads.exists()) {
-            return true;
-        } else {
-            return uploads.mkdirs();
+    public static File create_dir(String dirName) {
+        File directory = new File(dirName);
+        if (!directory.exists()) {
+            boolean ignore = directory.mkdirs();
         }
+        return directory;
     }
 
     public static void main(String[] args) {
-        if (create_dir(settings.source) && create_dir(settings.uploads)) {
+        settings.uploadPath = create_dir(settings.uploads);
+        settings.sourcePath = create_dir(settings.source);
+        if (settings.sourcePath.exists() && settings.uploadPath.exists()) {
             logger.info("Created source directory {} and uploads directory {}", settings.source, settings.uploads);
         } else {
             logger.error("Failed to create required directories. Aborting startup.");

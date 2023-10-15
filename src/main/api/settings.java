@@ -5,11 +5,15 @@ import io.github.cdimascio.dotenv.DotenvException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+
 public class settings {
     public static String source = "source";
     public static String uploads = "uploads";
     public static String port = "8080";
     public static String maxSize = "10MB";
+    public static File uploadPath = null;
+    public static File sourcePath = null;
     static Logger logger = LoggerFactory.getLogger(settings.class);
 
     public settings() {
