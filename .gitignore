@@ -1,3 +1,7 @@
 .idea/
 target/
 .env
+
+# Python SDK added to JavaIDE
+*.py
+*.zip
