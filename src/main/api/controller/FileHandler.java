@@ -1,13 +1,14 @@
 package main.api.controller;
 
 import main.api.settings;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,16 +20,23 @@ public class FileHandler {
 
     public static Object listFiles() {
         File source = new File(Paths.get(System.getProperty("user.dir"), settings.source).toString());
-        List<String> output = new ArrayList<>();
-        File[] fileList = source.listFiles();
+        List<String> files = new ArrayList<>();
+        List<String> directories = new ArrayList<>();
+        File[] contentList = source.listFiles();
         try {
-            assert fileList != null;
-            for (File file : fileList) {
-                if (file.isFile()) {
-                    output.add(file.getName());
+            assert contentList != null;
+            for (File element : contentList) {
+                if (element.isFile()) {
+                    files.add(element.getName());
+                }
+                if (element.isDirectory()) {
+                    directories.add(element.getName());
                 }
             }
-            return ResponseEntity.ok().body(output);
+            return ResponseEntity.ok().body(new JSONObject()
+                    .put("files", files)
+                    .put("directories", directories)
+                    .toString());
         } catch (NullPointerException error) {
             logger.error(error.getMessage());
             return ResponseEntity.internalServerError().body(error.getMessage());
@@ -55,6 +63,19 @@ public class FileHandler {
         } catch (IOException error) {
             logger.error(error.toString());
             return false;
+        }
+    }
+    public static Object downloadFile(String fileName) {
+        File file = Paths.get(settings.sourcePath.toString(), fileName).toFile();
+        try {
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(file));
+            return ResponseEntity.ok()
+                    .contentLength(file.length())
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(resource);
+        } catch (FileNotFoundException error) {
+            logger.error(error.toString());
+            return ResponseEntity.notFound();
         }
     }
 }
