@@ -47,6 +47,17 @@ public class APIHandler {
         return ResponseEntity.ok().body("healthy");
     }
 
+    @GetMapping(path = "/list-files")
+    public Object list_files(HttpServletRequest request) {
+        if (validateRequest(request)) {
+            logger.info("Authorized");
+        } else {
+            logger.error("401 Unauthorized");
+            return new ResponseEntity<>("Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+        return FileHandler.listFiles();
+    }
+
     @GetMapping(path = "/download-file")
     public Object download_file(HttpServletRequest request, @RequestParam String fileName) {
         if (validateRequest(request)) {

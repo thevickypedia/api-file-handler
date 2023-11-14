@@ -39,9 +39,15 @@ curl --location 'http://localhost:8080/upload-file?overwrite=true' \
 --form 'file=@"~/sample.txt"'
 ```
 
-### Donwload File
+### Download File
 ```shell
 curl --location 'http://localhost:8080/download-file?fileName=sample.docx' \
+--header 'Authorization: MyToken@2023'
+```
+
+### List Files
+```shell
+curl --location 'http://localhost:8080/list-files' \
 --header 'Authorization: MyToken@2023'
 ```
 

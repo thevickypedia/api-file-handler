@@ -13,6 +13,9 @@ public class models {
     }
 
     public static boolean authRequest(String authorization) {
+        if (authorization == null || authorization.isBlank()) {
+            return false;
+        }
         boolean equal = authorization.length() == settings.token.length();
         if (!equal) {
             return false;
